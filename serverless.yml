@@ -1,0 +1,43 @@
+service: bondoc-payroll-api
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: php-82-fpm
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+          Resource:
+            - arn:aws:s3:::bondoc-19-1290-764-payslips/payslips/*
+  environment:
+    S3_BUCKET: bondoc-19-1290-764-payslips
+    APP_ENV: production
+
+plugins:
+  - ./vendor/bref/bref
+
+package:
+  patterns:
+    - '!node_modules/**'
+    - '!tests/**'
+    - '!test*.php'
+    - '!*.png'
+    - '!*.log'
+    - '!.git/**'
+    - '!README.md'
+    - 'public/**'
+    - 'src/**'
+    - 'data/**'
+    - 'vendor/**'
+    - 'composer.json'
+    - 'composer.lock'
+
+functions:
+  api:
+    handler: public/index.php
+    description: 'PHP Payroll API - Reighfer Joshua V. Bondoc (19-1290-764)'
+    events:
+      - httpApi: '*'
