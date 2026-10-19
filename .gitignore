@@ -1,6 +1,7 @@
 /vendor/
 /.serverless/
 test-*.php
+*-screenshot*.js
 *.log
 .DS_Store
 Thumbs.db

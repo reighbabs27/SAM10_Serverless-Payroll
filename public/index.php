@@ -73,25 +73,10 @@ $router->get('/api/reports/payroll', function () use ($payrollService) {
 });
 
 /**
- * Endpoint 3: GET /api/payslips/{payroll_id}
- * Return an individual payslip containing employee details and payroll figures
- */
-$router->get('/api/payslips/{payroll_id}', function ($payroll_id) use ($payrollService) {
-    header('Content-Type: application/json; charset=utf-8');
-    $response = $payrollService->getPayslipResponse((int)$payroll_id);
-
-    if (!$response['success']) {
-        http_response_code(404);
-    }
-
-    echo json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-});
-
-/**
- * Endpoint 4: POST and GET /api/payslips/{payroll_id}/generate
+ * Endpoint 4: POST /api/payslips/{payroll_id}/generate (defined BEFORE generic payslips/{payroll_id})
  * Generate a PDF payslip, upload it to S3, and return the S3 object key / URL
  */
-$router->match('GET|POST', '/api/payslips/{payroll_id}/generate', function ($payroll_id) use ($payrollService, $pdfGenerator) {
+$router->match('GET|POST', '/api/payslips/([0-9]+)/generate', function ($payroll_id) use ($payrollService, $pdfGenerator) {
     header('Content-Type: application/json; charset=utf-8');
     $payslip = $payrollService->getPayslipResponse((int)$payroll_id);
 
@@ -108,6 +93,21 @@ $router->match('GET|POST', '/api/payslips/{payroll_id}/generate', function ($pay
     }
 
     echo json_encode($uploadResult, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+});
+
+/**
+ * Endpoint 3: GET /api/payslips/{payroll_id}
+ * Return an individual payslip containing employee details and payroll figures
+ */
+$router->get('/api/payslips/([0-9]+)', function ($payroll_id) use ($payrollService) {
+    header('Content-Type: application/json; charset=utf-8');
+    $response = $payrollService->getPayslipResponse((int)$payroll_id);
+
+    if (!$response['success']) {
+        http_response_code(404);
+    }
+
+    echo json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 });
 
 /**
